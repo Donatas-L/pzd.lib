@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{D3964F5A-7C08-4E4D-A52F-8D3A151F47A0}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>pzd.lib</RootNamespace>
+        <AssemblyName>pzd.lib</AssemblyName>
+        <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\..\quantum_unity\Assets\Plugins\quantum</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>..\..\quantum_unity\Assets\Plugins\quantum</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="JetBrains.Annotations, Version=2018.2.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+          <HintPath>..\packages\JetBrains.Annotations.2018.2.1\lib\net20\JetBrains.Annotations.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="mscorlib" />
+        <Reference Include="System" />
+        <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+          <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="System.Core" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="collection\EmptyArray.cs" />
+        <Compile Include="collection\Rope.cs" />
+        <Compile Include="concurrent\IHeapFuture.cs" />
+        <Compile Include="config\Config.cs" />
+        <Compile Include="config\ConfigExts.cs" />
+        <Compile Include="config\ConfigLookupError.cs" />
+        <Compile Include="config\ConfigPath.cs" />
+        <Compile Include="config\IConfig.cs" />
+        <Compile Include="config\IConfigExts.cs" />
+        <Compile Include="equality\EqCmp.cs" />
+        <Compile Include="exts\AnyExts.cs" />
+        <Compile Include="exts\ArrayExts.cs" />
+        <Compile Include="exts\CastBuilder.cs" />
+        <Compile Include="exts\DateTimeExts.cs" />
+        <Compile Include="exts\FloatExts.cs" />
+        <Compile Include="exts\ICollectionExts.cs" />
+        <Compile Include="exts\IEnumerableExts.cs" />
+        <Compile Include="exts\IListExts.cs" />
+        <Compile Include="exts\IImmutableSetExts.cs" />
+        <Compile Include="exts\NullableExts.cs" />
+        <Compile Include="exts\StringExts.cs" />
+        <Compile Include="exts\UIntExts.cs" />
+        <Compile Include="functional\Either.cs" />
+        <Compile Include="functional\higher_kinds\Functor.cs" />
+        <Compile Include="functional\higher_kinds\higher_kinds.cs" />
+        <Compile Include="functional\higher_kinds\Id.cs" />
+        <Compile Include="functional\higher_kinds\Monad.cs" />
+        <Compile Include="functional\lazy.cs" />
+        <Compile Include="functional\linq_exts.cs" />
+        <Compile Include="functional\OneOf.cs" />
+        <Compile Include="functional\OneOf4.cs" />
+        <Compile Include="functional\OneOf5.cs" />
+        <Compile Include="functional\Option.cs" />
+        <Compile Include="functional\Unit.cs" />
+        <Compile Include="json\MiniJson.cs" />
+        <Compile Include="pools\Pool.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="serialization\DeserializeInfo.cs" />
+        <Compile Include="serialization\interfaces.cs" />
+        <Compile Include="serialization\rws\AndRW.cs" />
+        <Compile Include="serialization\rws\baseRW.cs" />
+        <Compile Include="serialization\rws\byteRW.cs" />
+        <Compile Include="serialization\rws\CollectionDeserializer.cs" />
+        <Compile Include="serialization\rws\DateTimeRW.cs" />
+        <Compile Include="serialization\rws\EitherRW.cs" />
+        <Compile Include="serialization\rws\GuidRW.cs" />
+        <Compile Include="serialization\rws\ICollectionSerializer.cs" />
+        <Compile Include="serialization\rws\Joint.cs" />
+        <Compile Include="serialization\rws\Lambda.cs" />
+        <Compile Include="serialization\rws\Mapped.cs" />
+        <Compile Include="serialization\rws\OneOfRW.cs" />
+        <Compile Include="serialization\rws\OptRW.cs" />
+        <Compile Include="serialization\rws\primitiveRWs.cs" />
+        <Compile Include="serialization\rws\stringRW.cs" />
+        <Compile Include="serialization\rws\UnitRW.cs" />
+        <Compile Include="serialization\SerializedRW.cs" />
+        <Compile Include="typeclasses\ICollectionBuilder.cs" />
+        <Compile Include="utils\BinaryUtils.cs" />
+        <Compile Include="utils\KV.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>

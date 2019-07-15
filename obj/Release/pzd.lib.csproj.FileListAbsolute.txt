@@ -1,7 +1,0 @@
-E:\work\unity\pzd-win\quantum_unity\Assets\Plugins\quantum\pzd.lib.dll
-E:\work\unity\pzd-win\quantum_unity\Assets\Plugins\quantum\pzd.lib.pdb
-E:\work\unity\pzd-win\quantum_code\pzd.lib\obj\Release\pzd.lib.csprojAssemblyReference.cache
-E:\work\unity\pzd-win\quantum_code\pzd.lib\obj\Release\pzd.lib.csproj.CoreCompileInputs.cache
-E:\work\unity\pzd-win\quantum_code\pzd.lib\obj\Release\pzd.lib.csproj.CopyComplete
-E:\work\unity\pzd-win\quantum_code\pzd.lib\obj\Release\pzd.lib.dll
-E:\work\unity\pzd-win\quantum_code\pzd.lib\obj\Release\pzd.lib.pdb

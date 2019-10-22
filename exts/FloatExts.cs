@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 
 namespace pzd.lib.exts {
@@ -14,5 +15,11 @@ namespace pzd.lib.exts {
     
     public static float remap01(this float value, float from1, float to1) =>
       value.remap(from1, to1, 0f, 1f);
+
+    public static int roundToIntClamped(this float number) {
+      if (number > int.MaxValue) return int.MaxValue;
+      if (number < int.MinValue) return int.MinValue;
+      return (int) Math.Round(number);
+    }
   }
 }

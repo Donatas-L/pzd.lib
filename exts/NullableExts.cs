@@ -27,5 +27,8 @@ namespace pzd.lib.exts {
 
     public static Option<A> toOption<A>(this A? opt) where A : struct =>
       opt.HasValue ? new Option<A>(opt.Value) : new Option<A>();
+
+    public static A? orElse<A>(this A? opt1, A? opt2) where A : struct =>
+      opt1.HasValue ? opt1 : opt2;
   }
 }

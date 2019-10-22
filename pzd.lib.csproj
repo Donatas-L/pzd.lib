@@ -34,9 +34,13 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="JetBrains.Annotations, Version=2018.2.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
-          <HintPath>..\packages\JetBrains.Annotations.2018.2.1\lib\net20\JetBrains.Annotations.dll</HintPath>
-          <Private>False</Private>
+        <Reference Include="Humanizer, Version=2.7.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e">
+          <HintPath>packages\Humanizer.Core.2.7.9\lib\netstandard2.0\Humanizer.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="JetBrains.Annotations, Version=2019.1.3.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+          <HintPath>packages\JetBrains.Annotations.2019.1.3\lib\net20\JetBrains.Annotations.dll</HintPath>
+          <Private>True</Private>
         </Reference>
         <Reference Include="mscorlib" />
         <Reference Include="System" />
@@ -48,6 +52,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="collection\EmptyArray.cs" />
+        <Compile Include="collection\ImmutableArrayC.cs" />
         <Compile Include="collection\Rope.cs" />
         <Compile Include="concurrent\IHeapFuture.cs" />
         <Compile Include="config\Config.cs" />
@@ -56,19 +61,26 @@
         <Compile Include="config\ConfigPath.cs" />
         <Compile Include="config\IConfig.cs" />
         <Compile Include="config\IConfigExts.cs" />
+        <Compile Include="data\Rng.cs" />
+        <Compile Include="data\UnixTime.cs" />
         <Compile Include="equality\EqCmp.cs" />
         <Compile Include="exts\AnyExts.cs" />
         <Compile Include="exts\ArrayExts.cs" />
         <Compile Include="exts\CastBuilder.cs" />
+        <Compile Include="exts\ConcurrentQueueExts.cs" />
         <Compile Include="exts\DateTimeExts.cs" />
         <Compile Include="exts\FloatExts.cs" />
         <Compile Include="exts\ICollectionExts.cs" />
+        <Compile Include="exts\IDictionaryExts.cs" />
         <Compile Include="exts\IEnumerableExts.cs" />
         <Compile Include="exts\IListExts.cs" />
         <Compile Include="exts\IImmutableSetExts.cs" />
+        <Compile Include="exts\Int32Exts.cs" />
         <Compile Include="exts\NullableExts.cs" />
         <Compile Include="exts\StringExts.cs" />
         <Compile Include="exts\UIntExts.cs" />
+        <Compile Include="exts\UShortExts.cs" />
+        <Compile Include="exts\ValueTupleExts.cs" />
         <Compile Include="functional\Either.cs" />
         <Compile Include="functional\higher_kinds\Functor.cs" />
         <Compile Include="functional\higher_kinds\higher_kinds.cs" />
@@ -80,10 +92,12 @@
         <Compile Include="functional\OneOf4.cs" />
         <Compile Include="functional\OneOf5.cs" />
         <Compile Include="functional\Option.cs" />
+        <Compile Include="functional\Try.cs" />
         <Compile Include="functional\Unit.cs" />
         <Compile Include="json\MiniJson.cs" />
         <Compile Include="pools\Pool.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="reactive\Subscription.cs" />
         <Compile Include="serialization\DeserializeInfo.cs" />
         <Compile Include="serialization\interfaces.cs" />
         <Compile Include="serialization\rws\AndRW.cs" />

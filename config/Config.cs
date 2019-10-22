@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using JetBrains.Annotations;
+using pzd.lib.collection;
 using pzd.lib.exts;
 using pzd.lib.functional;
 using pzd.lib.json;
@@ -18,6 +19,9 @@ namespace pzd.lib.config {
         this.exception = exception;
         this.jsonString = jsonString;
       }
+
+      public override string ToString() => 
+        $"{nameof(ParsingError)}[{nameof(exception)}: {exception}, {nameof(jsonString)}: {jsonString}]";
 
       public ImmutableArray<KeyValuePair<string, string>> getExtras() => ImmutableArray.Create(
         KV.a("json", jsonString),
@@ -93,7 +97,7 @@ namespace pzd.lib.config {
     public static Parser<object, CB> collectionParser<CB, A>(
       Parser<object, A> parser,
       Func<int, CB> createCollectionBuilder,
-      Func<CB, A, CB> add
+      Func<CB, int, A, CB> add
     ) =>
       objectListParser.flatMap((path, objList) => {
         var builder = createCollectionBuilder(objList.Count);
@@ -102,31 +106,40 @@ namespace pzd.lib.config {
           var parsedE = parser(idxPath, objList[idx]);
           if (parsedE.isLeft)
             return Either<ConfigLookupError, CB>.Left(parsedE.__unsafeGetLeft);
-          builder = add(builder, parsedE.__unsafeGetRight);
+          builder = add(builder, idx, parsedE.__unsafeGetRight);
         }
         return Either<ConfigLookupError, CB>.Right(builder);
       });
 
     public static Parser<object, List<A>> listParser<A>(Parser<object, A> parser) =>
-      collectionParser(parser, count => new List<A>(count), (l, a) => {
+      collectionParser(parser, count => new List<A>(count), (l, idx, a) => {
         l.Add(a);
         return l;
       });
 
     public static Parser<object, ImmutableArray<A>> immutableArrayParser<A>(Parser<object, A> parser) =>
-      collectionParser(parser, ImmutableArray.CreateBuilder<A>, (b, a) => {
+      collectionParser(parser, ImmutableArray.CreateBuilder<A>, (b, idx, a) => {
         b.Add(a);
         return b;
       }).map(_ => _.MoveToImmutable());
 
+    public static Parser<object, A[]> arrayParser<A>(Parser<object, A> parser) =>
+      collectionParser(parser, size => new A[size], (b, idx, a) => {
+        b[idx] = a;
+        return b;
+      });
+
+    public static Parser<object, ImmutableArrayC<A>> immutableArrayCParser<A>(Parser<object, A> parser) =>
+      arrayParser(parser).map(ImmutableArrayC.move);
+
     public static Parser<object, ImmutableList<A>> immutableListParser<A>(Parser<object, A> parser) =>
-      collectionParser(parser, count => ImmutableList.CreateBuilder<A>(), (b, a) => {
+      collectionParser(parser, count => ImmutableList.CreateBuilder<A>(), (b, idx, a) => {
         b.Add(a);
         return b;
       }).map(_ => _.ToImmutable());
 
     public static Parser<object, ImmutableHashSet<A>> immutableHashSetParser<A>(Parser<object, A> parser) =>
-      collectionParser(parser, count => ImmutableHashSet.CreateBuilder<A>(), (b, a) => {
+      collectionParser(parser, count => ImmutableHashSet.CreateBuilder<A>(), (b, idx, a) => {
         b.Add(a);
         return b;
       }).map(_ => _.ToImmutable());
@@ -334,6 +347,14 @@ namespace pzd.lib.config {
       return parseErrorEFor<float>(path, n);
     };
 
+    [PublicAPI] public static readonly Parser<object, float> floatFromStringParser =
+      stringParser.flatMap((_, s) => {
+        var success = float.TryParse(
+          s, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.InvariantInfo, out var v
+        );
+        return success ? Some.a(v) : None._;
+      });
+
     [PublicAPI]
     public static readonly Parser<object, double> doubleParser = (path, n) => {
       try {
@@ -347,6 +368,14 @@ namespace pzd.lib.config {
       catch (OverflowException) { }
       return parseErrorEFor<double>(path, n);
     };
+
+    [PublicAPI] public static readonly Parser<object, double> doubleFromStringParser =
+      stringParser.flatMap((_, s) => {
+        var success = double.TryParse(
+          s, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.InvariantInfo, out var v
+        );
+        return success ? Some.a(v) : None._;
+      });
 
     [PublicAPI]
     public static readonly Parser<object, bool> boolParser = createCastParser<bool>();
@@ -366,6 +395,48 @@ namespace pzd.lib.config {
       configPathedParser("lower", aParser)
       .and(configPathedParser("upper", aParser), lowerUpperToRange);
 
+    public readonly struct ParserInput<Node> {
+      public readonly ConfigPath path;
+      public readonly Node node;
+
+      public ParserInput(ConfigPath path, Node node) {
+        this.path = path;
+        this.node = node;
+      }
+    }
+    
+    public delegate ParserInput<From> ParseFromList<From>(int index);
+    
+    /// <summary>
+    /// More than 4 generic parameters in <see cref="ConfigExts.tpl{From,A1,A2,A3,A4,C}"/> freak IL2CPP out,
+    /// so use this.
+    /// </summary>
+    public static Parser<From, R> tpl<From, R>(
+      Func<ParseFromList<From>, R> parse
+    ) =>
+      (path, node) => {
+        if (node is List<From> list) {
+          try {
+            return parse(idx => new ParserInput<From>(path.indexed(idx), list.a(idx)));
+          }
+          catch (Exception e) {
+            return parseErrorFor<R>(path, node, $"{list} failed with {e}");
+          }
+        }
+        else {
+          return parseErrorFor<List<From>>(path, node);
+        }
+      };
+
+    [PublicAPI]
+    public static Parser<object, A> mappingParser<A>(params KeyValuePair<object, A>[] mapping) {
+      var dict = new Dictionary<object, A>();
+      foreach (var kv in mapping) dict[kv.Key] = kv.Value;
+      return (path, node) => dict.TryGetValue(node, out var a) ? a : parseErrorEFor<A>(path, node);
+    }
+
+    public static Parser<object, R> tplObj<R>(Func<ParseFromList<object>, R> parse) => tpl(parse);
+    
     #endregion
 
     public ConfigPath scope { get; }

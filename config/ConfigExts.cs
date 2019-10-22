@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using pzd.lib.exts;
 using pzd.lib.functional;
 
 namespace pzd.lib.config {
@@ -161,6 +162,7 @@ namespace pzd.lib.config {
         }
       };
 
+    /// <see cref="Config.tpl{From,R}"/>
     public static Config.Parser<From, C> tpl<From, A1, A2, A3, A4, C>(
       this Config.Parser<From, A1> a1p, Config.Parser<From, A2> a2p, Config.Parser<From, A3> a3p,
       Config.Parser<From, A4> a4p, Func<A1, A2, A3, A4, C> mapper
@@ -185,31 +187,13 @@ namespace pzd.lib.config {
           return Config.parseErrorFor<(A1, A2, A3, A4)>(path, node);
         }
       };
-
-    public static Config.Parser<From, C> tpl<From, A1, A2, A3, A4, A5, C>(
-      this Config.Parser<From, A1> a1p, Config.Parser<From, A2> a2p, Config.Parser<From, A3> a3p,
-      Config.Parser<From, A4> a4p, Config.Parser<From, A5> a5p, Func<A1, A2, A3, A4, A5, C> mapper
-    ) =>
-      (path, node) => {
-        if (node is List<From> list) {
-          if (list.Count == 5) {
-            return 
-              from a1 in a1p(path.indexed(0), list[0])
-              from a2 in a2p(path.indexed(1), list[1])
-              from a3 in a3p(path.indexed(2), list[2])
-              from a4 in a4p(path.indexed(3), list[3])
-              from a5 in a5p(path.indexed(4), list[4])
-              select mapper(a1, a2, a3, a4, a5);
-          }
-          else {
-            return Config.parseErrorFor<(A1, A2, A3, A4, A5)>(
-              path, node, $"expected list of 5, got {list}"
-            );
-          }
-        }
-        else {
-          return Config.parseErrorFor<(A1, A2, A3, A4, A5)>(path, node);
-        }
-      };
+    
+    public static Either<ConfigLookupError, To> aE<From, To>(
+      this Config.Parser<From, To> p, Config.ParserInput<From> input
+    ) => p(input.path, input.node);
+    
+    public static To a<From, To>(
+      this Config.Parser<From, To> p, Config.ParserInput<From> input
+    ) => p(input.path, input.node).rightOrThrow;
   }
 }

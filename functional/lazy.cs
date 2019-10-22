@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using pzd.lib.concurrent;
 using pzd.lib.pools;
+using pzd.lib.reactive;
 
 namespace pzd.lib.functional {
   [PublicAPI] public static class Lazy {
@@ -67,8 +68,12 @@ namespace pzd.lib.functional {
       a = strict;
       return true;
     }
-    
-    public void onComplete(Action<A> action) => action(strict);
+
+    public ISubscription onComplete(Action<A> action) {
+      action(strict);
+      return Subscription.empty;
+    }
+
     #endregion
   }
 
@@ -82,6 +87,7 @@ namespace pzd.lib.functional {
     readonly Action<A> maybeAfterInitialization;
 
     List<Action<A>> listeners;
+    bool iterating;
 
     public LazyValImpl(Func<A> initializer, Action<A> afterInitialization = null) {
       this.initializer = initializer;
@@ -92,7 +98,7 @@ namespace pzd.lib.functional {
       if (! isCompleted) {
         obj = initializer();
         isCompleted = true;
-        onValueInited(obj);
+        onValueComputed(obj);
       }
       return obj;
     } }
@@ -106,18 +112,26 @@ namespace pzd.lib.functional {
       return isCompleted;
     }
 
-    public void onComplete(Action<A> action) {
-      if (isCompleted) action(obj);
+    public ISubscription onComplete(Action<A> action) {
+      if (isCompleted) {
+        action(obj);
+        return Subscription.empty;
+      }
       else {
         listeners = listeners ?? listenerPool.Borrow();
         listeners.Add(action);
+        return new Subscription(() => {
+          if (listeners == null || iterating) return;
+          listeners.Remove(action);
+        });
       }
     }
 
     #endregion
 
-    void onValueInited(A a) {
+    void onValueComputed(A a) {
       if (listeners != null) {
+        iterating = true;
         foreach (var listener in listeners) listener(a);
         listenerPool.Release(listeners);
         listeners = null;
@@ -135,7 +149,7 @@ namespace pzd.lib.functional {
       this.projector = projector;
     }
 
-    public void onComplete(Action<B> action) => backing.onComplete(a => action(projector(a)));
+    public ISubscription onComplete(Action<B> action) => backing.onComplete(a => action(projector(a)));
     public Option<B> value => backing.value.map(projector);
     public bool isCompleted => backing.isCompleted;
     public B strict => projector(backing.strict);

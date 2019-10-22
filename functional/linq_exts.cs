@@ -22,4 +22,11 @@ namespace pzd.lib.functional {
       this Either<L, R> opt, Func<R, Either<L, R1>> f, Func<R, R1, R2> g
     ) => opt.flatMapRight(f, g);
   }
+  
+  [PublicAPI] public static class TryLinqExts {
+    public static Try<B> Select<A, B>(this Try<A> t, Func<A, B> f) => t.map(f);
+    public static Try<B> SelectMany<A, B>(this Try<A> t, Func<A, Try<B>> f) => t.flatMap(f);
+    public static Try<B1> SelectMany<A, B, B1>(this Try<A> t, Func<A, Try<B>> f, Func<A, B, B1> g) =>
+      t.flatMap(f, g);
+  }
 }

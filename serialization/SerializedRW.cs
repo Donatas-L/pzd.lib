@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using JetBrains.Annotations;
 using pzd.lib.collection;
+using pzd.lib.exts;
 using pzd.lib.functional;
 using pzd.lib.serialization.rws;
 using pzd.lib.typeclasses;
@@ -181,8 +182,24 @@ namespace pzd.lib.serialization {
       a1RW, a2RW, a3RW, a4RW, a5RW, a6RW, a7RW, mapper, getA1, getA2, getA3, getA4, getA5, getA6, getA7
     );
 
+    public static ISerializedRW<B> and<A1, A2, A3, A4, A5, A6, A7, A8, B>(
+      this ISerializedRW<A1> a1RW, ISerializedRW<A2> a2RW, ISerializedRW<A3> a3RW,
+      ISerializedRW<A4> a4RW, ISerializedRW<A5> a5RW, ISerializedRW<A6> a6RW, ISerializedRW<A7> a7RW,
+      ISerializedRW<A8> a8RW,
+      Func<A1, A2, A3, A4, A5, A6, A7, A8, B> mapper, Func<B, A1> getA1, Func<B, A2> getA2, Func<B, A3> getA3,
+      Func<B, A4> getA4, Func<B, A5> getA5, Func<B, A6> getA6, Func<B, A7> getA7, Func<B, A8> getA8
+    ) => new AndRW8<A1, A2, A3, A4, A5, A6, A7, A8, B>(
+      a1RW, a2RW, a3RW, a4RW, a5RW, a6RW, a7RW, a8RW, mapper, getA1, getA2, getA3, getA4, getA5, getA6, getA7, getA8
+    );
+
     public static ISerializedRW<Option<A>> opt<A>(ISerializedRW<A> rw) =>
       new OptRW<A>(rw);
+    
+    public static ISerializedRW<A?> nullable<A>(ISerializedRW<A> rw) where A : struct =>
+      opt(rw).mapNoFail(
+        opt => opt.valueOut(out var a) ? a : (A?) null, 
+        maybeA => maybeA.valueOut(out var a) ? Some.a(a) : None._ 
+      );
 
     public static ISerializedRW<Either<A, B>> either<A, B>(ISerializedRW<A> aRW, ISerializedRW<B> bRW) =>
       new EitherRW<A, B>(aRW, bRW);

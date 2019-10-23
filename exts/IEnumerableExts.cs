@@ -4,9 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using pzd.lib.functional;
 
 namespace pzd.lib.exts {
   [PublicAPI] public static class IEnumerableExts {
+    public static Option<A> head<A>(this IEnumerable<A> enumerable) {
+      foreach (var a in enumerable) return new Option<A>(a);
+      return Option<A>.None;
+    }
+
     public static string mkString<A>(
       this IEnumerable<A> e, Action<StringBuilder> appendSeparator,
       string start = null, string end = null
